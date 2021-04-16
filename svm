@@ -30,134 +30,6 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 NEXT_VERSION="2.10.0"
-AVAILABLE_VERSIONS=`cat <<EOS
-2.5.0.final
-2.5.1.final
-2.6.0.final
-2.7.0.final
-2.7.1.final
-2.7.2.final
-2.7.3.final
-2.7.4.final
-2.7.5.final
-2.7.6.final
-2.7.7.RC1
-2.7.7.RC2
-2.7.7.final
-2.8.0.Beta1-RC1
-2.8.0.Beta1-RC2
-2.8.0.Beta1-prerelease
-2.8.0.RC1
-2.8.0.RC2
-2.8.0.RC3
-2.8.0.RC4
-2.8.0.RC5
-2.8.0.RC6
-2.8.0.RC7
-2.8.0.final
-2.8.1.RC1
-2.8.1.RC2
-2.8.1.RC3
-2.8.1.RC4
-2.8.1.final
-2.8.2.final
-2.9.0
-2.9.0.1
-2.9.1.RC1
-2.9.1.RC2
-2.9.1.RC3
-2.9.1.RC4
-2.9.1.final
-2.9.1-1-RC1
-2.9.1-1
-2.9.2-RC1
-2.9.2-RC2
-2.9.2-RC3
-2.9.2
-2.9.3-RC1
-2.9.3
-2.10.0-M1
-2.10.0-M2
-2.10.0-M3
-2.10.0-M4
-2.10.0-M5
-2.10.0-M6
-2.10.0-M7
-2.10.0-RC1
-2.10.0-RC2
-2.10.0-RC3
-2.10.0-RC4
-2.10.0-RC5
-2.10.0
-2.10.1
-2.10.2-RC2
-2.10.2
-2.10.3-RC2
-2.10.3-RC3
-2.10.3
-2.10.4-RC1
-2.10.4-RC2
-2.10.4-RC3
-2.10.4
-2.10.5
-2.10.6
-2.10.7
-2.11.0-M2
-2.11.0-M3
-2.11.0-M4
-2.11.0-M5
-2.11.0-M7
-2.11.0-M8
-2.11.0-RC1
-2.11.0-RC3
-2.11.0-RC4
-2.11.0
-2.11.1
-2.11.2
-2.11.3
-2.11.4
-2.11.5
-2.11.6
-2.11.7
-2.11.8
-2.11.10
-2.11.11
-2.11.12
-2.12.0-M1
-2.12.0-M2
-2.12.0-M3
-2.12.0-M4
-2.12.0-M5
-2.12.0-RC1
-2.12.0-RC2
-2.12.0
-2.12.1
-2.12.2
-2.12.3
-2.12.4
-2.12.5
-2.12.6
-2.12.7
-2.12.8
-2.12.9
-2.12.10
-2.12.11
-2.12.12
-2.12.13
-2.13.0-M1
-2.13.0-M2
-2.13.0-M3
-2.13.0-M4
-2.13.0-M5
-2.13.0-RC1
-2.13.0-RC2
-2.13.0-RC3
-2.13.0
-2.13.1
-2.13.2
-2.13.3
-2.13.4
-EOS`
 
 # Utility to compare versions
 vercomp () {
@@ -227,20 +99,12 @@ Action :
   -h|help             - show this usage information
   -c|current          - show the currently use scala version
   -l|list             - show the scala version installed in svm_path(default is $HOME/.svm)
-  -v|versions         - show the available scala version not installed
   -i|install          - install specific scala version
   -r|remove|uninstall - uninstall specific scala version and remove their sources
   -s|switch|-u|use    - setup to use a specific scala version
-  update-latest       - install or update nightly build scala version
   latest              - setup to use nightly build scala version
   stable              - setup to use stable(x.x.x.final) scala version
-  self-update         - update svm itself
   (any strings)       - setup to use specific scala version(shortcut of svm switch)
-
-
-Options :
-  --docs    - with install, update-latest. to download scala-docs.
-  --sources - with install, update-latest. to download scala-sources.
 
 Info :
   ゆろよろ Tomohito Ozaki
@@ -270,32 +134,6 @@ list(){
   esac
 }
 
-versions(){
-  case "`uname`" in
-    Darwin*)   installed_versions=`find ${BASE_DIR} -maxdepth 1 -d -print0 | xargs -0 -n 1 basename | grep 'scala' | sed 's/scala-//'` ;;
-    *)         installed_versions=`find ${BASE_DIR} -maxdepth 1 -depth -printf "%f\n" | grep 'scala' | sed 's/scala-//'` ;;
-  esac
-
-  for v in ${AVAILABLE_VERSIONS}
-  do
-    for i in ${installed_versions}
-    do
-      if [ "${v}" = "${i}" ] ; then
-        installed=1
-      fi
-    done
-    if [ -z "${installed}" ] ;then
-      echo "${v}"
-    fi
-    unset installed
-  done
-  cat << EOS
-more previous releases
-see https://www.scala-lang.org/node/165
-
-EOS
-}
-
 download(){
   url="$1"
   echo "Downloading $url"
@@ -316,7 +154,7 @@ download(){
 install(){
   version=$1
   echo "Trying to installing version of ${version}."
-  dist_url="https://www.scala-lang.org/files/archive"
+  dist_url="https://github.com/lampepfl/dotty/releases/download"
   version_dir="${BASE_DIR}/scala-${version}"
   if [ -d "${version_dir}" ]
   then
@@ -333,58 +171,18 @@ install(){
   cd "${version_dir}"
   echo "in ${version_dir}"
 
-  download "${dist_url}/scala-${version}.tgz"
+ # https://github.com/lampepfl/dotty/releases/download/3.0.0-RC2/scala3-3.0.0-RC2.zip
+
+  download "${dist_url}/${version}/scala3-${version}.zip"
   if [ $? -ne 0 ]; then
     cd "${PWD}"
     rm -rf "${version_dir}"
     return 1;
   fi
 
-  tar -xf scala-${version}.tgz
-  mv scala-${version} rt
-  rm scala-${version}.tgz
-
-  if [ ${docs_on} -eq 1 ] ; then
-    # Starting from 2.9.2, the pattern scala-docs-2.9.2.tgz is used, instead of scala-2.9.1-final-devel-docs.tgz
-    # Documentation download is here supported just for versions having the pattern x.y.z
-    vercomp ${NEXT_VERSION} '2.9.2'
-    case $? in
-        2) # in case NEXT_VERSION < 2.9.2
-        prefix="scala-"
-        suffix="-final-devel-docs"
-        fullSuffix="-final-devel-docs.tgz"
-        ;;
-        *) # in all other cases
-        prefix="scala-docs-"
-        suffix=""
-        fullSuffix=".tgz"
-        ;;
-    esac
-    download "${dist_url}/${prefix}${version}${fullSuffix}"
-    if [ $? -ne 0 ]; then
-      cd "${PWD}"
-      rm -rf "${version_dir}"
-      return 1;
-    fi
-
-    tar -xf ${prefix}${version}${fullSuffix}
-    mv scala-${version}${suffix} scala-docs
-    rm ${prefix}${version}${fullSuffix}
-  fi
-
-
-  if [ ${source_on} -eq 1 ] ; then
-    download "${dist_url}/scala-${version}-sources.tgz"
-    if [ $? -ne 0 ]; then
-      cd "${PWD}"
-      rm -rf "${version_dir}"
-      return 1;
-    fi
-
-    tar -xf scala-${version}-sources.tgz
-    mv scala-${version}-sources sources
-    rm scala-${version}-sources.tgz
-  fi
+  unzip scala3-${version}.zip
+  mv scala3-${version} rt
+  rm scala3-${version}.zip
 
   cd "${PWD}"
   echo "Successfully installed version of ${version}."
@@ -418,88 +216,6 @@ uninstall(){
 
 }
 
-update_latest(){
-  latest_dir="${BASE_DIR}/scala-latest"
-
-  if [ -d "${latest_dir}" ] ; then
-    mv "${latest_dir}" "${latest_dir}_bak"
-  fi
-  mkdir -p "${latest_dir}"
-  cd "${latest_dir}"
-  echo "in ${latest_dir}"
-
-  ESCAPED=${NEXT_VERSION//\./\\\.}
-  dist_url="https://www.scala-lang.org/files/archive/nightly/distributions"
-
-  download "${dist_url}/scala-${NEXT_VERSION}-latest.tgz"
-  if [ $? -ne 0 ]; then
-    cd "${PWD}"
-    rm -rf "${latest_dir}"
-    if [ -d "${latest_dir}_bak" ] ;then
-      mv "${latest_dir}_bak" "${latest_dir}"
-    fi
-    return 1;
-  fi
-
-  tar -xf scala-${NEXT_VERSION}-latest.tgz
-  EXTRACTED_DIR=`find . -maxdepth 1 -depth -regex ".*scala-${ESCAPED}\.r.*"`
-  rev="${EXTRACTED_DIR//scala-/}"
-  mv "${EXTRACTED_DIR}" rt
-  rm scala-${NEXT_VERSION}-latest.tgz
-
-  if [ ${docs_on} -eq 1 ] ; then
-    # Starting from 2.9.2, the pattern scala-docs-2.9.2.tgz is used, instead of scala-2.9.1-final-devel-docs.tgz
-    # Documentation download is here supported just for versions having the pattern x.y.z
-    vercomp ${NEXT_VERSION} '2.9.2'
-    case $? in
-        2) # in case NEXT_VERSION < 2.9.2
-        prefix="scala-"
-        suffix="-final-devel-docs.tgz"
-        ;;
-        *) # in all other cases
-        prefix="scala-docs-"
-        suffix=".tgz"
-        ;;
-    esac
-    download "${dist_url}/${prefix}${NEXT_VERSION}${suffix}"
-    if [ $? -ne 0 ]; then
-      cd "${PWD}"
-      rm -rf "${latest_dir}"
-      if [ -d "${latest_dir}_bak" ] ;then
-        mv "${latest_dir}_bak" "${latest_dir}"
-      fi
-      return 1;
-    fi
-
-    tar -xf ${prefix}${NEXT_VERSION}${suffix}
-    EXTRACTED_DIR=`find . -maxdepth 1 -depth -regex ".*scala-${ESCAPED}\.r.*"`
-    mv "${EXTRACTED_DIR}" scala-docs
-    rm ${prefix}${NEXT_VERSION}${suffix}
-  fi
-
-  if [ ${source_on} -eq 1 ] ; then
-    download "${dist_url}/scala-${NEXT_VERSION}-latest-sources.tgz"
-    if [ $? -ne 0 ]; then
-      cd "${PWD}"
-      rm -rf "${latest_dir}"
-      if [ -d "${latest_dir}_bak" ] ;then
-        mv "${latest_dir}_bak" "${latest_dir}"
-      fi
-      return 1;
-    fi
-
-    tar -xf scala-${NEXT_VERSION}-latest-sources.tgz
-    EXTRACTED_DIR=`find . -maxdepth 1 -depth -regex ".*scala-${ESCAPED}\.r.*"`
-    mv "${EXTRACTED_DIR}" sources
-    rm scala-${NEXT_VERSION}-latest-sources.tgz
-  fi
-
-  rm -rf "${latest_dir}_bak"
-  cd "${PWD}"
-  echo "Successfully updated scala-latest to revision of ${rev}"
-  return 0;
-
-}
 
 read_next_version(){
   list
@@ -587,46 +303,13 @@ get_stable(){
   return 0;
 }
 
-self_update(){
-  echo "Will update svm itself..."
-  path_to_svm=$0
-  tmp_new_script_file=`mktemp -t temp.XXXXXX`
-  curl https://raw.githubusercontent.com/yuroyoro/svm/master/svm > $tmp_new_script_file
-  if [ $? -ne 0 ]; then
-      echo "Failed to download new svm"
-      exit 1;
-  fi
-  mv $tmp_new_script_file $path_to_svm
-  chmod +x $path_to_svm
-  echo "svm successfully updated. ＼＼\\ ٩( 'ω' )و //／／"
-}
-
 cmd="$1"
-
-# download scala-sources if source_on=1
-source_on=0
-# download scala-devel-docs if docs_on=1
-docs_on=0
-
-for o in $*
-do
-  case "${o}" in
-    --sources)   source_on=1  ;;
-    --docs)      docs_on=1    ;;
-    * )             ;;
-  esac
-done
 
 if [ -z "${cmd}" ] ; then
   current
 else
   case "$cmd" in
     -h|help)             usage ;;
-    -c|current)          current ;;
-    -l|list)             list
-                         current
-                         ;;
-    -v|versions)         versions ;;
     -i|install)          install $2
                          if [ $? -eq 0 ]; then
                            confirm_switch $2
@@ -634,19 +317,6 @@ else
                          ;;
     -r|remove|uninstall) uninstall $2 ;;
     -s|-u|switch|use)    switch $2 ;;
-    update-latest)       update_latest
-                         if [ $? -eq 0 ]; then
-                           confirm_switch "latest"
-                         fi
-                         ;;
-    latest)              latest_dir="${BASE_DIR}/scala-latest"
-                         if [ ! -d "${latest_dir}" ] ; then
-                           update_latest
-                         fi
-                         switch "latest" ;;
-    stable)              get_stable stable
-                         switch "${stable}"
-                         ;;
     self-update)         self_update
                          ;;
     * )                  switch "${cmd}" ;;
