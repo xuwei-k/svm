@@ -154,7 +154,7 @@ download(){
 install(){
   version=$1
   echo "Trying to installing version of ${version}."
-  dist_url="https://github.com/lampepfl/dotty/releases/download"
+  dist_url="https://github.com/scala/scala3/releases/download"
   version_dir="${BASE_DIR}/scala-${version}"
   if [ -d "${version_dir}" ]
   then
@@ -171,7 +171,7 @@ install(){
   cd "${version_dir}"
   echo "in ${version_dir}"
 
- # https://github.com/lampepfl/dotty/releases/download/3.0.0-RC2/scala3-3.0.0-RC2.zip
+ # https://github.com/scala/scala3/releases/download/3.0.0-RC2/scala3-3.0.0-RC2.zip
 
   download "${dist_url}/${version}/scala3-${version}.zip"
   if [ $? -ne 0 ]; then
